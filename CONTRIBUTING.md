@@ -78,14 +78,6 @@ O revisor lê o diff e reproduz a validação relevante. No início, PRs de docu
 - Conferir preservação do original, mensagens de erro, liberação de memória e contratos dos headers afetados.
 - Registrar no PR comandos, resultado e limitações. Não exigir melhoria de compressão para toda entrada: cabeçalhos podem aumentar arquivos pequenos ou pouco redundantes.
 
-## Precisamos de CI?
-
-**Não para proteger a main.** A proteção exige PR e revisão no servidor; CI automatiza parte da validação técnica. Inicialmente, a conferência será manual e não há workflow de Actions neste repositório.
-
-Quando existir uma versão que compile, vale adicionar um único job Linux com GCC: compilar usando o comando oficial e, assim que houver uma interface automatizável, executar testes de comprimir/descomprimir e comparar bytes. O menu obrigatório deve continuar disponível. Executar em PRs para `main` e em pushes na `main`.
-
-Só tornar esse job obrigatório na proteção depois que ele existir e executar corretamente. Não começar com matriz de sistemas, cobertura mínima, deploy ou infraestrutura extra. Um CI pequeno passa a valer bastante quando cinco pessoas alteram módulos C dependentes entre si; não substitui revisão nem o ensaio no laboratório.
-
 ## Configuração local adicional
 
 A pasta inicial usa `pull.ff=only` (evita merges involuntários no pull) e `fetch.prune=true` (limpa referências de branches removidas no remoto). Cada integrante deve repetir estas configurações após clonar, pois elas não são versionadas:

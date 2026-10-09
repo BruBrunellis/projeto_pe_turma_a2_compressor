@@ -8,8 +8,8 @@ Implementação em C de um compressor e descompressor de arquivos de texto e bin
 Leia [CONTRIBUTING.md](CONTRIBUTING.md) para criar branches, enviar commits e revisar pull requests.
 O responsável pelo remoto deve seguir [a configuração de proteção da main](docs/CONFIGURACAO_REMOTO.md).
 
-**Estado inicial:** apenas documentação do fluxo. Não há implementação, comando de compilação ou CI ainda.
-As regras descritas nos arquivos só passam a bloquear pushes depois de configuradas no servidor.
+**Estado inicial:** documentação do fluxo e verificações automáticas básicas. Ainda não há implementação do compressor. Consulte os detalhes das verificações em [configuração do remoto](docs/CONFIGURACAO_REMOTO.md).
+Remoto público: https://github.com/BruBrunellis/projeto_pe_turma_a2_compressor. A main exige PR, revisão e verificações básicas aprovadas no servidor.
 
 ## Requisitos extraídos da proposta
 

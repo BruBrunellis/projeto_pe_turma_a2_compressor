@@ -1,53 +1,44 @@
-# Configuração inicial do remoto (GitHub)
+# Remoto e proteção da main
 
-Hipótese de hospedagem: GitHub. Adaptar as mesmas regras se o grupo escolher outro servidor.
-Este documento é um roteiro de configuração; sua presença no Git **não ativa** proteção.
+Repositório público: https://github.com/BruBrunellis/projeto_pe_turma_a2_compressor
 
-## Publicar a base
+## Regras aplicadas no servidor
 
-1. O responsável cria um repositório remoto vazio, sem README gerado pelo servidor, com o nome combinado e a visibilidade escolhida pelo grupo.
-2. Na pasta local, já inicializada com branch `main`, confira `git status`, revise e publique a base. Se o commit inicial já tiver sido criado, pule os comandos git add e git commit. Substitua `URL_DO_REMOTO` pela URL real:
+- Branch padrão: `main`.
+- Alterações entram por pull request, com pelo menos uma aprovação de outro integrante.
+- Novos commits invalidam aprovações anteriores; conversas devem estar resolvidas.
+- O check **Verificacoes basicas** precisa passar e a branch deve estar atualizada com a `main`.
+- As regras também se aplicam a administradores.
+- Force push e exclusão da `main` ficam bloqueados.
+- Merge commits habilitados; squash e rebase desabilitados para preservar os commits individuais.
+- Branches de PRs integrados são apagadas automaticamente.
+
+O responsável pode inspecionar as regras em **Settings → Branches**. Alterar este documento não altera as regras do GitHub.
+
+## Verificações automáticas pequenas
+
+O arquivo `.github/workflows/basico.yml` executa um único job em PRs para `main`, em pushes na `main` e por acionamento manual:
+
+1. `git diff --check` em todos os arquivos rastreados: detecta espaços no fim das linhas e marcadores de conflito introduzidos no diff.
+2. Compilação individual de cada `.c` rastreado com GCC, `-std=c90 -pedantic-errors -Wall -Wextra`, incluindo as pastas raiz, `include/` e `src/`.
+
+Enquanto não houver fontes C, a segunda etapa informa explicitamente que não se aplica. Ela gera objetos temporários: não faz a ligação do executável nem testa o comportamento do compressor. Quando existir a implementação, acrescentar o comando oficial de build e casos de comprimir/descomprimir com comparação byte a byte. C90 é a referência inicial para ANSI C, a confirmar com o docente.
+
+Para executar as mesmas verificações localmente, com Python 3, Git e GCC no PATH:
 
 ```sh
-git add README.md CONTRIBUTING.md docs/CONFIGURACAO_REMOTO.md .github/pull_request_template.md .gitignore
-git commit -m "Documenta fluxo de colaboracao do grupo"
-git remote add origin URL_DO_REMOTO
-git push -u origin main
+python scripts/check_basics.py
 ```
 
-Esse é o push de bootstrap, antes de proteger a branch e iniciar as contribuições. Se o remoto já tiver histórico, reconciliar os históricos antes; não usar force push para sobrescrevê-lo.
+Adicionar arquivos novos com `git add` antes da execução para incluí-los na verificação. Os objetos temporários são removidos ao terminar.
 
-3. Confirmar `main` como branch padrão. Convidar os outros quatro integrantes com acesso de escrita (Write, onde houver seleção de papel). Não conceder Admin para o trabalho cotidiano.
+## Entrada dos demais integrantes
 
-## Proteger a main antes de começar
+Convidar os outros quatro integrantes em **Settings → Collaborators**, com acesso de escrita. Cada integrante clona o repositório com sua própria conta e segue o [guia de contribuição](../CONTRIBUTING.md).
 
-Em **Settings → Branches → Add branch protection rule**, criar uma regra para o nome exato `main`:
+É necessário ao menos outro integrante com acesso para aprovar PRs: o autor não pode aprovar o próprio PR, e o administrador também está sujeito à proteção.
 
-- Ativar **Require a pull request before merging**.
-- Exigir **1 aprovação** de outro integrante.
-- Ativar **Dismiss stale pull request approvals when new commits are pushed**.
-- Ativar **Require conversation resolution before merging**.
-- Ativar **Do not allow bypassing the above settings**, incluindo administradores na aplicação das regras.
-- Deixar **Allow force pushes** e **Allow deletions** desativados.
-- Deixar checks obrigatórios desativados nesta fase, pois não há CI.
+## Referências
 
-Não configurar lista de pessoas autorizadas a ignorar PRs. Não bloquear toda atualização da branch: o merge de PRs aprovados precisa continuar permitido.
-
-Em **Settings → General → Pull Requests**, habilitar merge commits e desabilitar squash/rebase para manter um único procedimento e preservar commits individuais. Habilitar exclusão automática de branches após merge. Não exigir histórico linear, pois o fluxo usa merge commits.
-
-## Verificar que a proteção está ativa
-
-Criar uma branch de documentação, enviar um pequeno ajuste real e abrir PR contra `main`. Conferir que o merge fica bloqueado antes da aprovação; pedir a outro integrante que revise. Enviar uma correção adicional e conferir que a aprovação anterior é invalidada. Após nova aprovação e resolução das conversas, integrar pelo botão de merge.
-
-Conferir também nas configurações que force push e exclusão estão proibidos e que administradores não têm bypass. Não é necessário tentar um push destrutivo para validar essas opções.
-
-## Disponibilidade do recurso
-
-A documentação do GitHub informa que proteção de branches está disponível em repositórios públicos no Free; para privados, depende de Pro, Team ou Enterprise. Conferir o plano do proprietário e se a regra é efetivamente aplicada. Não tornar público o trabalho apenas para habilitar a proteção sem uma decisão do grupo.
-
-Se o plano não permitir proteção no privado, o acordo de PRs continua útil, mas não bloqueia tecnicamente pushes diretos. Uma alternativa é manter escrita no repositório central apenas com um integrador e receber PRs de forks, se a política de forks privados permitir, até escolher uma hospedagem/plano compatível. CI também não resolve essa limitação de permissão.
-
-Documentação oficial consultada em 09/10/2026:
-
-- [Sobre branches protegidas](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
-- [Gerenciar uma regra de proteção](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule)
+- [Branches protegidas](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
+- [API de proteção](https://docs.github.com/en/rest/branches/branch-protection)
