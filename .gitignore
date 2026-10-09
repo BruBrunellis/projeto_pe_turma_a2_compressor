@@ -1,0 +1,22 @@
+# Compilação C
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+/build/
+/bin/
+
+# Saídas temporárias de testes; fixtures deliberadas podem ser versionadas em tests/
+/tmp/
+/test-output/
+
+# Arquivos locais do sistema e editor
+.DS_Store
+Thumbs.db
+*.swp
+*~
