@@ -29,6 +29,8 @@ int comprimir_arquivo(
     Estatisticas *estatisticas
 );
 
+/* Valida BIFT v1 e restaura exatamente o tamanho original. Aplica a mesma
+   politica de destino, recursos e estatisticas de comprimir_arquivo. */
 int descomprimir_arquivo(
     const char *entrada,
     const char *saida,
