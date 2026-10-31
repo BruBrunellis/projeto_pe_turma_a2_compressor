@@ -9,7 +9,7 @@ O executável é `bin/bitforest.exe` e a extensão dos arquivos comprimidos é `
 Leia [CONTRIBUTING.md](CONTRIBUTING.md) para criar branches, enviar commits e revisar pull requests.
 O responsável pelo remoto deve seguir [a configuração de proteção da main](docs/CONFIGURACAO_REMOTO.md).
 
-**Estado atual:** a compressão Huffman em duas passagens está implementada em `src/compressor.c`. A descompressão e o menu completo ainda estão pendentes. Consulte [Readme.txt](Readme.txt) para compilação, formato BIFT v1, contratos e limites, e [configuração do remoto](docs/CONFIGURACAO_REMOTO.md) para as verificações automáticas.
+**Estado atual:** BitForest foi compilado pelo Makefile em um pacote isolado com os dez arquivos da entrega. Pelo menu, texto, binário, vazio e símbolo repetido foram restaurados byte a byte, com originais preservados e métricas conferidas. Consulte [Readme.txt](Readme.txt) para os resultados, compilação, uso do menu, formato BIFT v1, contratos e limites, e [configuração do remoto](docs/CONFIGURACAO_REMOTO.md) para as verificações automáticas.
 Remoto público: https://github.com/BruBrunellis/projeto_pe_turma_a2_compressor. A main exige PR, revisão e verificações básicas aprovadas no servidor.
 
 ## Requisitos extraídos da proposta

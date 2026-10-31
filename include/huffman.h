@@ -8,6 +8,9 @@
 
 #define TAMANHO_ARVORE_MAX 767
 
+#define HUFFMAN_ERRO_ARVORE -1
+#define HUFFMAN_ERRO_MEMORIA -2
+
 typedef struct NoHuffman NoHuffman;
 
 /* No da arvore: folha quando nao tem filhos. */
@@ -40,6 +43,8 @@ int huffman_serializar(
     unsigned int *tamanho
 );
 
+/* Retorna 0, HUFFMAN_ERRO_ARVORE ou HUFFMAN_ERRO_MEMORIA.
+   Em sucesso, o chamador libera *arvore; em erro, *arvore fica NULL. */
 int huffman_desserializar(
     const unsigned char *buffer,
     unsigned int tamanho,
