@@ -349,6 +349,7 @@ typedef struct {
     unsigned char simbolos[QUANTIDADE_SIMBOLOS];
     unsigned int quantidade_nos;
     unsigned int quantidade_folhas;
+    int erro;
 } ContextoDesserializacao;
 
 
@@ -377,6 +378,7 @@ static NoHuffman *desserializar_no(
     no = (NoHuffman *)malloc(sizeof(NoHuffman));
 
     if (no == NULL) {
+        contexto->erro = HUFFMAN_ERRO_MEMORIA;
         return NULL;
     }
 
@@ -462,7 +464,7 @@ int huffman_desserializar(
     unsigned int i;
 
     if (arvore == NULL) {
-        return -1;
+        return HUFFMAN_ERRO_ARVORE;
     }
 
     *arvore = NULL;
@@ -473,7 +475,7 @@ int huffman_desserializar(
     }
 
     if (buffer == NULL || tamanho > TAMANHO_ARVORE_MAX) {
-        return -1;
+        return HUFFMAN_ERRO_ARVORE;
     }
 
     contexto.buffer = buffer;
@@ -481,6 +483,7 @@ int huffman_desserializar(
     contexto.posicao = 0;
     contexto.quantidade_nos = 0;
     contexto.quantidade_folhas = 0;
+    contexto.erro = HUFFMAN_ERRO_ARVORE;
 
     for (i = 0; i < QUANTIDADE_SIMBOLOS; i++) {
         contexto.simbolos[i] = 0;
@@ -489,19 +492,19 @@ int huffman_desserializar(
     raiz = desserializar_no(&contexto, 0);
 
     if (raiz == NULL) {
-        return -1;
+        return contexto.erro;
     }
 
     /* Verifica se todos os bytes foram consumidos. */
     if (contexto.posicao != contexto.tamanho) {
         liberar_no(raiz);
-        return -1;
+        return HUFFMAN_ERRO_ARVORE;
     }
 
     /* Uma arvore valida deve ter pelo menos uma folha. */
     if (contexto.quantidade_folhas == 0) {
         liberar_no(raiz);
-        return -1;
+        return HUFFMAN_ERRO_ARVORE;
     }
 
     *arvore = raiz;
