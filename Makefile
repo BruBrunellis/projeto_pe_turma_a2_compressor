@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -std=c90 -pedantic-errors -Wall -Wextra -Iinclude
 
 BIN_DIR = bin
-TARGET = $(BIN_DIR)/compressor.exe
+TARGET = $(BIN_DIR)/bitforest.exe
 
 SOURCES = $(wildcard src/*.c)
 HEADERS = $(wildcard include/*.h)
