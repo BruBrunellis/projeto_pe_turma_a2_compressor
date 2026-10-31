@@ -20,8 +20,8 @@ Compilação
 Execução
   bin/bitforest.exe
   Nesta etapa, o executável apenas exibe o nome BitForest.
-  A compressão está disponível pela função comprimir_arquivo.
-  A descompressão (#6) e o menu completo (#7) ainda estão pendentes.
+  Os fluxos estão disponíveis pelas funções comprimir_arquivo e descomprimir_arquivo.
+  O menu completo (#7) ainda está pendente.
   Menu previsto: 1) Comprimir  2) Descomprimir  3) Sair.
   Arquivo comprimido usa a extensão .bift. Os arquivos originais não são alterados.
 
@@ -33,7 +33,8 @@ Formato do arquivo comprimido (v1) - inteiros em big-endian, bits do mais ao men
   N bytes  árvore em pré-ordem: nó interno = 0; folha = 1 seguido do byte do símbolo
   ...      dados: códigos de Huffman concatenados; último byte completado com zeros
   Arquivo vazio: árvore e dados vazios. Um único símbolo: código "0", um bit por ocorrência.
-  A descompressão termina pelo tamanho original, ignorando os zeros de preenchimento.
+  A descompressão termina pelo tamanho original e valida os zeros de preenchimento.
+  Bytes adicionais após os dados compactados são recusados.
 
 Retornos de comprimir_arquivo/descomprimir_arquivo
   COMPRESSOR_OK (0) ou um código de erro definido em include/compressor.h.
@@ -56,6 +57,26 @@ Contrato da compressão
   Os demais erros distinguem leitura/reposicionamento, escrita/fechamento,
   árvore inválida, tamanho excedido e falha de alocação, conforme compressor.h.
 
+Contrato da descompressão
+  descomprimir_arquivo recebe o caminho comprimido, o destino escolhido e o endereço
+  de Estatisticas. Usa a mesma política de arquivos, recursos e estatísticas acima.
+  A entrada é lida em rb; a nova saída é escrita em wb. O conteúdo é restaurado
+  progressivamente, sem carregar o arquivo inteiro na memória.
+  O cabeçalho deve ter assinatura BIFT, versão 1 e todos os campos completos.
+  A árvore deve caber no buffer de 767 bytes e só pode ser vazia se o original
+  também for vazio. A validação estrutural é feita por huffman_desserializar.
+  Essa função retorna 0 em sucesso, HUFFMAN_ERRO_ARVORE (-1) para árvore inválida
+  ou HUFFMAN_ERRO_MEMORIA (-2) para falha de alocação; o chamador libera a raiz.
+  Para símbolo único, cada byte restaurado consome um bit 0. Para os demais casos,
+  cada bit escolhe um ramo, e uma folha produz um byte, até o tamanho original.
+  Cabeçalho/árvore inválidos, fim prematuro, bit 1 para símbolo único, preenchimento
+  não zero e bytes adicionais retornam COMPRESSOR_ARQUIVO_INVALIDO.
+  Falhas de leitura retornam COMPRESSOR_ERRO_LEITURA; escrita, flush ou fechamento
+  da saída retornam COMPRESSOR_ERRO_ESCRITA. Falha de alocação é propagada como
+  COMPRESSOR_ERRO_MEMORIA, com liberação de qualquer árvore parcial.
+  Os tamanhos correspondem ao original restaurado e ao arquivo BIFT completo,
+  incluindo cabeçalho, árvore e último byte de dados com preenchimento.
+
 Limites e métricas
   O tamanho original da v1 é limitado a 4294967295 bytes (2^32 - 1).
   A segunda leitura deve processar exatamente a quantidade contada na primeira.
@@ -64,12 +85,17 @@ Limites e métricas
   Tempo e razão ficam para a interface (#7); a estrutura contém apenas tamanhos.
   Razão: tamanho_comprimido / tamanho_original; para vazio, não aplicável.
   Arquivos pequenos ou pouco redundantes podem aumentar por causa do cabeçalho.
+  A v1 não tem checksum: a validação do formato não detecta toda alteração dos dados.
+  O limite real de 4294967295 bytes não foi exercitado nesta conferência.
 
-Conferência desta etapa
+Conferência dos dois fluxos
   Compilação C90 integrada e scripts/check_basics.py aprovados.
   Foram conferidos vazio, símbolo único, texto com caminhos com espaços, todos os
-  bytes, códigos longos e binário de 1 MiB. A restauração por um leitor independente
-  foi comparada com fc.exe /b, com retorno zero nas 11 entradas conferidas.
-  Destinos existentes foram preservados; falhas simuladas de escrita, flush,
-  fechamento e leitura confirmaram os retornos e o descarte da saída parcial.
-  A restauração pela função descomprimir_arquivo depende da implementação de #6.
+  bytes, códigos longos e binário de 1 MiB. Os 11 ciclos usando comprimir_arquivo e
+  descomprimir_arquivo tiveram comparação fc.exe /b com retorno zero e estatísticas
+  corretas. Os arquivos comprimidos coincidiram com os gerados na etapa da #5.
+  Três exemplos BIFT montados por bytes foram restaurados independentemente do
+  compressor. Dezoito entradas inválidas e seis casos de abertura/destino foram
+  recusados, preservando a entrada e sem deixar uma saída parcial.
+  Dez falhas simuladas de leitura, escrita, flush, fechamento e alocação confirmaram
+  os retornos, as estatísticas preservadas e a liberação dos nós alocados.
