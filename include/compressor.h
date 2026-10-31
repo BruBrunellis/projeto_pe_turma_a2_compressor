@@ -4,6 +4,7 @@
 #define COMPRESSOR_ASSINATURA "BIFT"
 #define COMPRESSOR_TAMANHO_ASSINATURA 4
 #define COMPRESSOR_VERSAO 1
+#define COMPRESSOR_TAMANHO_ORIGINAL_MAX 4294967295UL
 
 typedef struct {
     unsigned long tamanho_original;
