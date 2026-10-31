@@ -6,14 +6,27 @@ Eduardo Dal Molin Morales (11202422080); Giovanna da Silva Champam (11202131886)
 João Paulo Sanches Lira (11202520348); Kauann Antevere Ramos (11202521805).
 
 Ambiente de compilação
-  Conferido no Windows com GCC 16.1.0 do MSYS2 UCRT64.
+  Conferido no Windows, pelo PowerShell, com GCC 16.1.0 e GNU Make 4.4.1
+  (mingw32-make) do MSYS2 UCRT64. Ambos precisam estar no PATH da sessão.
   Padrão C90 (-std=c90 -pedantic-errors), com -Wall -Wextra.
 
 Compilação
-  make            gera bin/bitforest.exe (cria bin/ se faltar)
-  make clean      remove bin/
-  O comando make não estava disponível no ambiente desta conferência; sua execução
-  não foi verificada. A compilação direta por GCC abaixo foi aprovada.
+  A partir da raiz do projeto, no PowerShell com as ferramentas acima:
+  mingw32-make          gera bin/bitforest.exe (cria bin/ se faltar)
+  mingw32-make clean    remove bin/
+  Se o GNU Make estiver disponível com o nome make, use make e make clean.
+
+  Pacote de código: copiar somente os dez arquivos abaixo, mantendo as pastas:
+    src/main.c, src/huffman.c, src/compressor.c, src/bits.c
+    include/main.h, include/huffman.h, include/compressor.h, include/bits.h
+    Makefile, Readme.txt
+  Não incluir bin/, executáveis, temporários nem os demais apoios do repositório.
+  Relatório e slides, se usados, são entregas separadas.
+
+  Em 31/10/2026, esse pacote foi compilado pelo Makefile em uma pasta limpa com
+  espaços no caminho. bin/ foi criada automaticamente e o executável abriu o menu.
+  clean, recompilação e nova chamada sem alterações também passaram, sem avisos
+  do GCC. Não foram necessários arquivos das demais pastas do repositório.
 
   Sem make, a partir da raiz do projeto (crie bin/ se faltar):
   mkdir bin
@@ -130,4 +143,34 @@ Conferência do menu
   Erros após uma operação bem-sucedida não reapresentaram estatísticas anteriores.
   Relógio indisponível no início/fim, retrocesso e intervalo zero foram simulados;
   as operações continuaram corretas, com a apresentação esperada do tempo.
-  A conferência completa do pacote em pasta limpa fica para a issue #8.
+
+Conferência do pacote em pasta limpa (issue #8, 31/10/2026)
+  Foi usado o executável gerado pelo Makefile no pacote isolado descrito acima.
+  As entradas e saídas ficaram em pasta temporária separada do pacote. Cada caso
+  foi comprimido e restaurado pelas opções 1 e 2 do menu, encerrando pela opção 3.
+
+  Caso                       Original  Comprimido  Razão     Tempo C/D (s)
+  Texto UTF-8                    3008        1737  0.577460  0.001000/0.001000
+  Binário: bytes 00 a FF, x256   65536       66314  1.011871  0.016000/0.012000
+  Vazio                             0          11  N/A       0.002000/0.018000
+  Símbolo FF repetido 4097 vezes  4097         526  0.128387  0.001000/0.001000
+
+  Tamanhos em bytes. C/D indica compressão/descompressão, uma execução de cada.
+  Os tamanhos exibidos coincidiram com os arquivos e as razões com a divisão
+  comprimido/original, arredondada para seis casas. Para vazio, o menu mostrou
+  razão não aplicável. Os tempos são as leituras observadas de clock(), sujeitas
+  à resolução e às limitações já descritas; não representam um benchmark.
+
+  As quatro comparações entre original e restaurado com fc.exe /b retornaram zero.
+  Outras quatro comparações com cópias anteriores confirmaram os originais intactos.
+  Foram usados caminhos relativos, absolutos e com espaços e nomes escolhidos para
+  os restaurados. A extensão .bift foi acrescentada quando faltava; .bift e .BIFT
+  já informadas foram preservadas, sem duplicação do sufixo.
+
+  Entrada inexistente e destino existente foram conferidos em ambos os fluxos:
+  quatro recusas com mensagem, retorno ao menu e sem métricas de sucesso. Nenhuma
+  saída parcial foi criada; fc.exe /b confirmou os destinos existentes e as entradas
+  preservados. Não foram observadas falhas que exigissem alteração dos módulos.
+  Capturas de texto da compilação, do menu e das comparações ficaram guardadas
+  localmente, fora do pacote, para apoiar o relatório. A verificação existente
+  scripts/check_basics.py também foi aprovada no repositório.
