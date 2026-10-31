@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 
 #include "main.h"
 #include "compressor.h"
@@ -125,11 +126,36 @@ static int ajustar_extensao(char *caminho, int capacidade)
     return 1;
 }
 
+static void exibir_estatisticas(
+    const Estatisticas *estatisticas,
+    double segundos)
+{
+    printf("Tamanho original: %lu bytes\n", estatisticas->tamanho_original);
+    printf("Tamanho comprimido: %lu bytes\n", estatisticas->tamanho_comprimido);
+
+    if (segundos >= 0.0) {
+        printf("Tempo: %.6f s\n", segundos);
+    } else {
+        printf("Tempo: indisponivel\n");
+    }
+
+    if (estatisticas->tamanho_original == 0) {
+        printf("Razao comprimido/original: nao aplicavel (original vazio).\n");
+    } else {
+        printf("Razao comprimido/original: %.6f\n",
+            (double)estatisticas->tamanho_comprimido /
+            (double)estatisticas->tamanho_original);
+    }
+}
+
 int main(void)
 {
     char entrada[TAMANHO_CAMINHO_MAX];
     char saida[TAMANHO_CAMINHO_MAX];
     Estatisticas estatisticas;
+    clock_t inicio;
+    clock_t fim;
+    double segundos;
     int opcao;
     int resultado;
 
@@ -175,15 +201,23 @@ int main(void)
             continue;
         }
 
+        inicio = clock();
         if (opcao == OPCAO_COMPRIMIR) {
             resultado = comprimir_arquivo(entrada, saida, &estatisticas);
         } else {
             resultado = descomprimir_arquivo(entrada, saida, &estatisticas);
         }
+        fim = clock();
+
+        segundos = -1.0;
+        if (inicio != (clock_t)-1 && fim != (clock_t)-1 && fim >= inicio) {
+            segundos = ((double)fim - (double)inicio) / CLOCKS_PER_SEC;
+        }
 
         switch (resultado) {
             case COMPRESSOR_OK:
                 printf("Operacao concluida. Arquivo gerado: %s\n", saida);
+                exibir_estatisticas(&estatisticas, segundos);
                 break;
             case COMPRESSOR_ERRO_ABRIR:
                 printf("Falha ao abrir arquivos. Confira a origem, as permissoes\n"
