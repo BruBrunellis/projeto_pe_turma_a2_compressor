@@ -1,7 +1,7 @@
 COMPRESSOR DE HUFFMAN - Programação Estruturada (MCTA028-15), UFABC 2026.3, turma A2
 
 Integrantes
-Bruno Vital Brunelli (11202420920); 
+Bruno Vital Brunelli (11202420920);
 Eduardo Dal Molin Morales (11202422080); Giovanna da Silva Champam (11202131886);
 João Paulo Sanches Lira (11202520348); Kauann Antevere Ramos (11202521805).
 
