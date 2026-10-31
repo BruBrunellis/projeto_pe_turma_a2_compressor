@@ -143,4 +143,34 @@ Conferência do menu
   Erros após uma operação bem-sucedida não reapresentaram estatísticas anteriores.
   Relógio indisponível no início/fim, retrocesso e intervalo zero foram simulados;
   as operações continuaram corretas, com a apresentação esperada do tempo.
-  A conferência completa do pacote em pasta limpa fica para a issue #8.
+
+Conferência do pacote em pasta limpa (issue #8, 31/10/2026)
+  Foi usado o executável gerado pelo Makefile no pacote isolado descrito acima.
+  As entradas e saídas ficaram em pasta temporária separada do pacote. Cada caso
+  foi comprimido e restaurado pelas opções 1 e 2 do menu, encerrando pela opção 3.
+
+  Caso                       Original  Comprimido  Razão     Tempo C/D (s)
+  Texto UTF-8                    3008        1737  0.577460  0.001000/0.001000
+  Binário: bytes 00 a FF, x256   65536       66314  1.011871  0.016000/0.012000
+  Vazio                             0          11  N/A       0.002000/0.018000
+  Símbolo FF repetido 4097 vezes  4097         526  0.128387  0.001000/0.001000
+
+  Tamanhos em bytes. C/D indica compressão/descompressão, uma execução de cada.
+  Os tamanhos exibidos coincidiram com os arquivos e as razões com a divisão
+  comprimido/original, arredondada para seis casas. Para vazio, o menu mostrou
+  razão não aplicável. Os tempos são as leituras observadas de clock(), sujeitas
+  à resolução e às limitações já descritas; não representam um benchmark.
+
+  As quatro comparações entre original e restaurado com fc.exe /b retornaram zero.
+  Outras quatro comparações com cópias anteriores confirmaram os originais intactos.
+  Foram usados caminhos relativos, absolutos e com espaços e nomes escolhidos para
+  os restaurados. A extensão .bift foi acrescentada quando faltava; .bift e .BIFT
+  já informadas foram preservadas, sem duplicação do sufixo.
+
+  Entrada inexistente e destino existente foram conferidos em ambos os fluxos:
+  quatro recusas com mensagem, retorno ao menu e sem métricas de sucesso. Nenhuma
+  saída parcial foi criada; fc.exe /b confirmou os destinos existentes e as entradas
+  preservados. Não foram observadas falhas que exigissem alteração dos módulos.
+  Capturas de texto da compilação, do menu e das comparações ficaram guardadas
+  localmente, fora do pacote, para apoiar o relatório. A verificação existente
+  scripts/check_basics.py também foi aprovada no repositório.
