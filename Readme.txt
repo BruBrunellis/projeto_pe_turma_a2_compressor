@@ -12,6 +12,8 @@ Ambiente de compilação
 Compilação
   make            gera bin/bitforest.exe (cria bin/ se faltar)
   make clean      remove bin/
+  O comando make não estava disponível no ambiente desta conferência; sua execução
+  não foi verificada. A compilação direta por GCC abaixo foi aprovada.
 
   Sem make, a partir da raiz do projeto (crie bin/ se faltar):
   mkdir bin
@@ -19,11 +21,23 @@ Compilação
 
 Execução
   bin/bitforest.exe
-  Nesta etapa, o executável apenas exibe o nome BitForest.
-  Os fluxos estão disponíveis pelas funções comprimir_arquivo e descomprimir_arquivo.
-  O menu completo (#7) ainda está pendente.
-  Menu previsto: 1) Comprimir  2) Descomprimir  3) Sair.
-  Arquivo comprimido usa a extensão .bift. Os arquivos originais não são alterados.
+  Menu: 1) Comprimir  2) Descomprimir  3) Sair.
+  Digite uma opção por linha. O menu permite novas operações após sucesso ou erro.
+  EOF encerra o programa, inclusive durante a solicitação dos caminhos.
+
+Uso dos caminhos
+  Informe origem e destino sem aspas, um por linha. São aceitos caminhos absolutos,
+  relativos e com espaços; caminhos relativos partem da pasta em que o programa roda.
+  Ao comprimir, .bift é acrescentada se o destino ainda não tiver esse sufixo.
+  Exemplo: dados.bin gera dados.bin.bift. O sufixo existente também é reconhecido
+  em maiúsculas, como dados.BIFT, preservando o nome digitado.
+  Ao descomprimir, o destino é exatamente o nome/caminho escolhido para o restaurado.
+  Os buffers têm 512 bytes, incluindo o terminador nulo; a extensão acrescentada
+  também deve caber nesse limite. Linhas vazias ou longas são recusadas antes da
+  operação, e o restante da linha longa é consumido para recuperar o menu.
+  Os originais são preservados e os destinos existentes são recusados.
+  Falha de abertura pode indicar origem inexistente, acesso recusado ou destino
+  existente; o menu apresenta uma mensagem compatível com esse retorno agrupado.
 
 Formato do arquivo comprimido (v1) - inteiros em big-endian, bits do mais ao menos significativo
   4 bytes  assinatura "BIFT" (42 49 46 54 em hexadecimal, sem terminador nulo)
@@ -49,7 +63,7 @@ Contrato da compressão
   Destino existente ou falha de acesso retorna COMPRESSOR_ERRO_ABRIR.
   Essa verificação com fopen em C90 não reserva o caminho de forma atômica;
   nenhum outro processo deve criar ou alterar o destino durante a operação.
-  O chamador fornece o caminho completo; a extensão .bift será aplicada pelo menu.
+  O chamador fornece o caminho completo; o menu aplica a extensão .bift na compressão.
   O módulo fecha os arquivos e libera a árvore em sucesso ou erro. Em falha após
   criar a saída, tenta removê-la; falha na remoção retorna COMPRESSOR_ERRO_ESCRITA.
   Estatisticas só é preenchida após escrita, flush e fechamento bem-sucedidos.
@@ -82,8 +96,15 @@ Limites e métricas
   A segunda leitura deve processar exatamente a quantidade contada na primeira.
   Também é recusado um tamanho comprimido que não caiba em unsigned long.
   Os tamanhos são contados durante o processamento, sem depender de ftell.
-  Tempo e razão ficam para a interface (#7); a estrutura contém apenas tamanhos.
+  A interface mostra tamanhos, tempo e razão somente após uma operação bem-sucedida.
+  A estrutura Estatisticas continua contendo apenas os tamanhos.
   Razão: tamanho_comprimido / tamanho_original; para vazio, não aplicável.
+  O tempo é a diferença das leituras de clock() antes e depois da operação, dividida
+  por CLOCKS_PER_SEC. Inclui abertura, processamento e fechamento dos arquivos.
+  No ambiente verificado, CLOCKS_PER_SEC é 1000. A exibição usa seis casas decimais,
+  sem garantir precisão de microssegundos; intervalos curtos podem aparecer como zero.
+  Se clock() falhar ou retroceder, o tempo aparece como indisponível, preservando
+  o resultado da operação e as demais métricas.
   Arquivos pequenos ou pouco redundantes podem aumentar por causa do cabeçalho.
   A v1 não tem checksum: a validação do formato não detecta toda alteração dos dados.
   O limite real de 4294967295 bytes não foi exercitado nesta conferência.
@@ -99,3 +120,14 @@ Conferência dos dois fluxos
   recusados, preservando a entrada e sem deixar uma saída parcial.
   Dez falhas simuladas de leitura, escrita, flush, fechamento e alocação confirmaram
   os retornos, as estatísticas preservadas e a liberação dos nós alocados.
+
+Conferência do menu
+  Compilação C90 integrada e scripts/check_basics.py aprovados após a integração.
+  Quatro ciclos pelo executável, com vazio, símbolo único, texto com espaços e todos
+  os bytes, tiveram comparação fc.exe /b com retorno zero e métricas corretas.
+  Foram conferidos opções inválidas, EOF, linhas vazias/longas, limites dos buffers,
+  extensão existente, destinos preservados e arquivo comprimido inválido.
+  Erros após uma operação bem-sucedida não reapresentaram estatísticas anteriores.
+  Relógio indisponível no início/fim, retrocesso e intervalo zero foram simulados;
+  as operações continuaram corretas, com a apresentação esperada do tempo.
+  A conferência completa do pacote em pasta limpa fica para a issue #8.
