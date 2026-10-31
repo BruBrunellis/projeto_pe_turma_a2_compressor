@@ -1,42 +1,28 @@
-# Compilador
+# Compila somente src/*.c, com os headers de include/.
 CC = gcc
+CFLAGS = -std=c90 -pedantic-errors -Wall -Wextra -Iinclude
 
-# Opcoes de compilacao
-CFLAGS = -Wall -Wextra -Wpedantic -std=c90 -Iinclude -g
-
-# Diretorios
-SRC_DIR = src
-BUILD_DIR = build
 BIN_DIR = bin
-
-# Executavel final
 TARGET = $(BIN_DIR)/compressor.exe
 
-# Arquivos fonte
-SOURCES = $(wildcard $(SRC_DIR)/*.c)
+SOURCES = $(wildcard src/*.c)
+HEADERS = $(wildcard include/*.h)
 
-# Arquivos objeto
-OBJECTS = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SOURCES))
-
-# Regra principal
-.PHONY: all dirs clean
+.PHONY: all clean
 
 all: $(TARGET)
 
-# Criacao dos diretorios
-dirs:
-	if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-	if not exist $(BIN_DIR) mkdir $(BIN_DIR)
+$(TARGET): $(SOURCES) $(HEADERS) | $(BIN_DIR)
+	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET)
 
-# Geracao dos arquivos objeto
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | dirs
-	$(CC) $(CFLAGS) -c $< -o $@
+# Cria bin/ somente quando ela nao existe.
+$(BIN_DIR):
+	mkdir $(BIN_DIR)
 
-# Geracao do executavel
-$(TARGET): $(OBJECTS) | dirs
-	$(CC) $(OBJECTS) -o $(TARGET)
-
-# Limpeza dos arquivos gerados
+ifeq ($(OS),Windows_NT)
 clean:
-	if exist "$(BUILD_DIR)" rmdir /s /q "$(BUILD_DIR)"
-	if exist "$(TARGET)" del /q "$(TARGET)"
+	if exist $(BIN_DIR) rmdir /s /q $(BIN_DIR)
+else
+clean:
+	rm -rf $(BIN_DIR)
+endif

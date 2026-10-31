@@ -1,8 +1,11 @@
 #include <stdio.h>
 
+#include "main.h"
+#include "compressor.h"
+
 int main(void)
 {
-    printf("Compressor de Huffman\n");
+    printf("%s\n", NOME_PROGRAMA);
 
     return 0;
 }
