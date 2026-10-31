@@ -2,8 +2,8 @@
 #define MAIN_H
 
 /* Constantes da interface (menu e caminhos). */
-#define NOME_PROGRAMA "Compressor de Huffman"
-#define EXTENSAO_COMPRIMIDO ".hfz"
+#define NOME_PROGRAMA "BitForest"
+#define EXTENSAO_COMPRIMIDO ".bift"
 #define TAMANHO_CAMINHO_MAX 512
 
 #define OPCAO_COMPRIMIR 1

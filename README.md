@@ -1,7 +1,8 @@
-# Compressor — PE, turma A2
+# BitForest — PE, turma A2
 
 Trabalho de Programação Estruturada da UFABC, quadrimestre 2026.3.
 Implementação em C de um compressor e descompressor de arquivos de texto e binários.
+O executável é `bin/bitforest.exe` e a extensão dos arquivos comprimidos é `.bift`.
 
 ## Trabalho em equipe
 

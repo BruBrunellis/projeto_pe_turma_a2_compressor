@@ -1,6 +1,10 @@
 #ifndef COMPRESSOR_H
 #define COMPRESSOR_H
 
+#define COMPRESSOR_ASSINATURA "BIFT"
+#define COMPRESSOR_TAMANHO_ASSINATURA 4
+#define COMPRESSOR_VERSAO 1
+
 typedef struct {
     unsigned long tamanho_original;
     unsigned long tamanho_comprimido;
