@@ -6,14 +6,27 @@ Eduardo Dal Molin Morales (11202422080); Giovanna da Silva Champam (11202131886)
 João Paulo Sanches Lira (11202520348); Kauann Antevere Ramos (11202521805).
 
 Ambiente de compilação
-  Conferido no Windows com GCC 16.1.0 do MSYS2 UCRT64.
+  Conferido no Windows, pelo PowerShell, com GCC 16.1.0 e GNU Make 4.4.1
+  (mingw32-make) do MSYS2 UCRT64. Ambos precisam estar no PATH da sessão.
   Padrão C90 (-std=c90 -pedantic-errors), com -Wall -Wextra.
 
 Compilação
-  make            gera bin/bitforest.exe (cria bin/ se faltar)
-  make clean      remove bin/
-  O comando make não estava disponível no ambiente desta conferência; sua execução
-  não foi verificada. A compilação direta por GCC abaixo foi aprovada.
+  A partir da raiz do projeto, no PowerShell com as ferramentas acima:
+  mingw32-make          gera bin/bitforest.exe (cria bin/ se faltar)
+  mingw32-make clean    remove bin/
+  Se o GNU Make estiver disponível com o nome make, use make e make clean.
+
+  Pacote de código: copiar somente os dez arquivos abaixo, mantendo as pastas:
+    src/main.c, src/huffman.c, src/compressor.c, src/bits.c
+    include/main.h, include/huffman.h, include/compressor.h, include/bits.h
+    Makefile, Readme.txt
+  Não incluir bin/, executáveis, temporários nem os demais apoios do repositório.
+  Relatório e slides, se usados, são entregas separadas.
+
+  Em 31/10/2026, esse pacote foi compilado pelo Makefile em uma pasta limpa com
+  espaços no caminho. bin/ foi criada automaticamente e o executável abriu o menu.
+  clean, recompilação e nova chamada sem alterações também passaram, sem avisos
+  do GCC. Não foram necessários arquivos das demais pastas do repositório.
 
   Sem make, a partir da raiz do projeto (crie bin/ se faltar):
   mkdir bin
