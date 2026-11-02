@@ -1,4 +1,3 @@
-
 #include <string.h>
 #include "explorador.h"
 #include "tinyfiledialogs.h"
