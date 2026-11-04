@@ -1,4 +1,4 @@
-#indef EXPLORADOR_H
+#ifndef EXPLORADOR_H
 #define EXPLORADOR_H
 
 int explorador_selecionar_arquivo(char *caminho, int capacidade);
