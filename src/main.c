@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "compressor.h"
+#include "explorador.h"
 
 static int ler_caminho(char *destino, int capacidade)
 {
@@ -171,29 +172,19 @@ int main(void)
             continue;
         }
 
-        printf("Arquivo de origem (sem aspas): ");
-        fflush(stdout);
-        if (!ler_caminho(entrada, sizeof(entrada))) {
-            if (feof(stdin) || ferror(stdin)) {
-                break;
-            }
-            printf("Caminho vazio ou muito longo. Operacao nao iniciada.\n");
-            continue;
-        }
+        printf("Selecione o arquivo de origem.\n");
 
-        if (opcao == OPCAO_COMPRIMIR) {
-            printf("Arquivo de destino (.bift sera acrescentada se necessario): ");
-        } else {
-            printf("Arquivo restaurado de destino: ");
-        }
-        fflush(stdout);
-        if (!ler_caminho(saida, sizeof(saida))) {
-            if (feof(stdin) || ferror(stdin)) {
-                break;
-            }
-            printf("Caminho vazio ou muito longo. Operacao nao iniciada.\n");
-            continue;
-        }
+if (!explorador_selecionar_arquivo(entrada, sizeof(entrada))) {
+    printf("Selecao de arquivo cancelada ou invalida.\n");
+    continue;
+}
+
+printf("Selecione o destino do arquivo.\n");
+
+if (!explorador_selecionar_destino(saida, sizeof(saida))) {
+    printf("Selecao de destino cancelada ou invalida.\n");
+    continue;
+}
 
         if (opcao == OPCAO_COMPRIMIR &&
             !ajustar_extensao(saida, sizeof(saida))) {
