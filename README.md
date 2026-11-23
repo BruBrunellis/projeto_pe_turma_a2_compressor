@@ -1,50 +1,55 @@
-# BitForest — PE, turma A2
+# BitForest
 
-Trabalho de Programação Estruturada da UFABC, quadrimestre 2026.3.
-Implementação em C de um compressor e descompressor de arquivos de texto e binários.
-O executável é `bin/bitforest.exe` e a extensão dos arquivos comprimidos é `.bift`.
+BitForest é um compressor sem perdas para arquivos de texto e binários. Você escolhe a origem e o destino em janelas de arquivo, vê os resultados no terminal e restaura o conteúdo original byte por byte a partir de um `.bift`.
+
+O projeto foi desenvolvido em C na disciplina de Programação Estruturada da UFABC, turma A2, quadrimestre 2026.3.
+
+## Como funciona
+
+O BitForest usa **codificação de Huffman por byte**. Na primeira leitura, ele conta quantas vezes cada valor de byte aparece. Em seguida, combina repetidamente os dois nós de menor peso para construir uma árvore. Os caminhos da raiz às folhas viram códigos binários, de modo que os bytes mais frequentes tendem a ocupar menos bits.
+
+Na segunda leitura, o programa grava a sequência de bits codificada em um arquivo `.bift`, junto com a árvore e o tamanho original. Ao descomprimir, ele reconstrói a árvore, percorre seus ramos de acordo com os bits e restaura os bytes até atingir o tamanho informado no cabeçalho. Em arquivos pequenos ou pouco redundantes, o custo de armazenar o cabeçalho e a árvore pode superar a economia nos dados.
+
+## Experimente no Windows
+
+Com o Git instalado, use os comandos abaixo no PowerShell para clonar o repositório.
+
+```powershell
+git clone https://github.com/BruBrunellis/projeto_pe_turma_a2_compressor.git
+cd projeto_pe_turma_a2_compressor
+```
+
+Com o GCC e o GNU Make do MSYS2 UCRT64 instalados no local padrão, compile a partir dessa pasta. O [guia de compilação](Readme.txt) traz os passos de instalação e a alternativa para compilar só com o GCC.
+
+```powershell
+$env:Path = "C:\msys64\ucrt64\bin;$env:Path"
+mingw32-make
+```
+
+Quando a compilação terminar com sucesso, execute o programa.
+
+```powershell
+.\bin\bitforest.exe
+```
+
+1. Para comprimir, digite **1**, selecione `dados.txt` como exemplo de origem e salve com o nome `dados.txt.bift`.
+2. Para restaurar, digite **2**, selecione `dados.txt.bift` e salve como `dados-restaurados.txt`.
+3. Digite **3** para sair. Se o original e o restaurado estiverem na pasta do projeto, compare os bytes com `fc.exe /b dados.txt dados-restaurados.txt` no PowerShell.
+
+A cada operação concluída, o terminal mostra o tempo, os tamanhos e a razão entre o tamanho comprimido e o original.
+
+## Arquitetura
+
+O menu recebe os caminhos do explorador e aciona o compressor. O compressor usa os módulos de Huffman e de leitura e escrita de bits para processar os arquivos sem carregar todo o conteúdo em memória.
+
+| Módulo | Responsabilidade |
+| --- | --- |
+| [`main.c`](src/main.c) | Exibe o menu, coordena as operações e apresenta as métricas. |
+| [`explorador.c`](src/explorador.c) | Abre os diálogos de origem e destino por meio da biblioteca [tinyfiledialogs](src/tinyfiledialogs.c), incluída no repositório. |
+| [`compressor.c`](src/compressor.c) | Conta frequências, lê e grava o formato BIFT e coordena a compressão e a restauração. |
+| [`huffman.c`](src/huffman.c) | Constrói a árvore, gera os códigos e serializa ou reconstrói a árvore. |
+| [`bits.c`](src/bits.c) | Lê e escreve bits sobre arquivos com um buffer de um byte. |
 
 ## Trabalho em equipe
 
-Leia [CONTRIBUTING.md](CONTRIBUTING.md) para criar branches, enviar commits e revisar pull requests.
-O responsável pelo remoto deve seguir [a configuração de proteção da main](docs/CONFIGURACAO_REMOTO.md).
-
-**Estado atual:** BitForest foi compilado pelo Makefile em um pacote isolado com os dez arquivos da entrega. Pelo menu, texto, binário, vazio e símbolo repetido foram restaurados byte a byte, com originais preservados e métricas conferidas. Consulte [Readme.txt](Readme.txt) para os resultados, compilação, uso do menu, formato BIFT v1, contratos e limites, e [configuração do remoto](docs/CONFIGURACAO_REMOTO.md) para as verificações automáticas.
-Remoto público: https://github.com/BruBrunellis/projeto_pe_turma_a2_compressor. A main exige PR, revisão e verificações básicas aprovadas no servidor.
-
-## Requisitos extraídos da proposta
-
-Fonte: `PE_2026_3_Trabalho.pdf`, disponível na pasta PE. Este resumo não substitui o roteiro.
-
-- Código de autoria dos integrantes, em ANSI C, compilável com GCC; não usar bibliotecas que implementem as etapas essenciais de compressão, processamento de cadeias ou ordenação pronta.
-- Escolher e fundamentar um algoritmo tradicional, como Huffman ou Ziv-Lempel; modularizar com TADs e cuidar de alocação/liberação de memória.
-- Nome exclusivo e menu no terminal: comprimir, descomprimir e sair.
-- Aceitar caminhos absolutos e relativos; usar extensão personalizada no arquivo comprimido e permitir escolher o nome do restaurado.
-- Preservar os originais e restaurar o conteúdo exatamente, byte a byte.
-- Exibir tempo e tamanhos em bytes; calcular a razão `tamanho comprimido / tamanho original`. Definir tratamento para entrada vazia, sem dividir por zero.
-- Avaliar baixa, média e alta redundância e comparar com gzip ou equivalente no Windows.
-- Discutir uma funcionalidade adicional: o roteiro a apresenta como possibilidade/incentivo, mas também a menciona nos critérios de avaliação; confirmar a expectativa com o docente.
-
-## Entrega e apresentação
-
-- Um integrante envia pelo Moodle o código `.c`/`.h`, `leia-me.txt` com instruções de compilação ou `Makefile`, relatório PDF e slides, se usados.
-- Identificar nominalmente todos os integrantes. Relatório: até 20 páginas, Arial 10, espaçamento duplo, decisões técnicas, testes ilustrados e análise de desempenho.
-- Todos devem participar e dominar o trabalho; haverá compilação e execução no laboratório. Apresentação: 10 minutos de exposição e 10 de arguição.
-- Grupos normalmente têm quatro integrantes; cinco são admitidos excepcionalmente. Todos devem ser da mesma turma.
-- Reserva de apresentação: 23–30/10/2026; entrega: 30/10–05/11/2026; apresentações: 06 e 13/11/2026, das 8h às 10h. Acompanhar eventuais alterações no Moodle.
-
-## Organização sugerida para cinco pessoas
-
-Definam primeiro o algoritmo, formato do arquivo e contratos dos módulos (headers, retornos de erro e responsabilidade por liberar memória).
-
-| Frente | Responsabilidade inicial |
-| --- | --- |
-| Integrante 1 | Menu, caminhos, integração e instruções de compilação |
-| Integrante 2 | Estruturas de dados e construção do modelo |
-| Integrante 3 | Codificação e escrita do arquivo comprimido |
-| Integrante 4 | Decodificação e reconstrução do original |
-| Integrante 5 | Testes de integridade, experimentos e comparação de desempenho |
-
-A divisão é por responsabilidade inicial, não por exclusividade. Todos programam, revisam e escrevem a parte do relatório referente às próprias decisões. Rodiziem revisores para compartilhar conhecimento.
-
-Comecem com um caminho completo pequeno (comprimir e restaurar uma entrada simples), ampliem os casos e depois façam os experimentos. Evitem integrar os cinco módulos apenas perto da entrega.
+O fluxo de branches, commits e revisão de pull requests está no [guia de contribuição](CONTRIBUTING.md).
