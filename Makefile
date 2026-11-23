@@ -2,6 +2,11 @@
 CC = gcc
 CFLAGS = -std=c90 -pedantic-errors -Wall -Wextra -Iinclude
 
+ifeq ($(OS),Windows_NT)
+# Bibliotecas do Windows usadas pela tinyfiledialogs.
+LDLIBS += -lcomdlg32 -lole32 -lgdi32
+endif
+
 BIN_DIR = bin
 TARGET = $(BIN_DIR)/bitforest.exe
 
@@ -12,8 +17,8 @@ HEADERS = $(wildcard include/*.h)
 
 all: $(TARGET)
 
-$(TARGET): $(SOURCES) $(HEADERS) | $(BIN_DIR)
-	$(CC) $(CFLAGS) $(SOURCES) -o $(TARGET)
+$(TARGET): $(SOURCES) $(HEADERS) Makefile | $(BIN_DIR)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -o $@ $(LDLIBS)
 
 # Cria bin/ somente quando ela nao existe.
 $(BIN_DIR):
